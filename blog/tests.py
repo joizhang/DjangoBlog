@@ -182,7 +182,7 @@ class ArticleTest(TestCase):
         send_email(["qq@qq.com"], "testTitle", "testContent")
         save_user_avatar("https://www.python.org/static/img/python-logo@2x.png")
 
-    def test_errorpage(self):
+    def test_error_page(self):
         rsp = self.client.get("/eee")
         self.assertEqual(rsp.status_code, 404)
 

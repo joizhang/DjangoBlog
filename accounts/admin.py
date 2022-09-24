@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.forms import (ReadOnlyPasswordHashField,
-                                       UserChangeForm, UsernameField)
+from django.contrib.auth.forms import (
+    ReadOnlyPasswordHashField,
+    UserChangeForm,
+    UsernameField,
+)
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
