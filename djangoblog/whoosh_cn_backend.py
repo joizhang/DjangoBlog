@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import json
 import os
@@ -14,15 +15,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.datetime_safe import datetime
 from django.utils.encoding import force_str
-from haystack.backends import (
-    BaseEngine,
-    BaseSearchBackend,
-    BaseSearchQuery,
-    EmptyResults,
-    log_query,
-)
+from haystack.backends import (BaseEngine, BaseSearchBackend, BaseSearchQuery,
+                               EmptyResults, log_query)
 from haystack.constants import DJANGO_CT, DJANGO_ID, ID
-from haystack.exceptions import MissingDependency, SearchBackendError, SkipDocument
+from haystack.exceptions import (MissingDependency, SearchBackendError,
+                                 SkipDocument)
 from haystack.inputs import Clean, Exact, PythonData, Raw
 from haystack.models import SearchResult
 from haystack.utils import get_identifier, get_model_ct
@@ -31,18 +28,10 @@ from haystack.utils.app_loading import haystack_get_model
 from jieba.analyse import ChineseAnalyzer
 from whoosh import index
 from whoosh.analysis import StemmingAnalyzer
-from whoosh.fields import (
-    BOOLEAN,
-    DATETIME,
-    IDLIST,
-    KEYWORD,
-    NGRAM,
-    NGRAMWORDS,
-    NUMERIC,
-    Schema,
-    TEXT,
-)
+from whoosh.fields import BOOLEAN, DATETIME
 from whoosh.fields import ID as WHOOSH_ID
+from whoosh.fields import (IDLIST, KEYWORD, NGRAM, NGRAMWORDS, NUMERIC, TEXT,
+                           Schema)
 from whoosh.filedb.filestore import FileStorage, RamStorage
 from whoosh.highlight import ContextFragmenter, HtmlFormatter
 from whoosh.highlight import highlight as whoosh_highlight

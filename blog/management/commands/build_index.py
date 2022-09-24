@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand
 
-from blog.documents import ElapsedTimeDocument, ArticleDocumentManager, ElaspedTimeDocumentManager, \
-    ELASTICSEARCH_ENABLED
+from blog.documents import (ELASTICSEARCH_ENABLED, ArticleDocumentManager,
+                            ElapsedTimeDocument, ElaspedTimeDocumentManager)
 
 
 # TODO 参数化
 class Command(BaseCommand):
-    help = 'build search index'
+    help = "build search index"
 
     def handle(self, *args, **options):
         if ELASTICSEARCH_ENABLED:

@@ -1,11 +1,12 @@
 from django.contrib import admin
-from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse, NoReverseMatch
+from django.urls import NoReverseMatch, reverse
 from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import pgettext_lazy, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 action_names = {
     ADDITION: pgettext_lazy("logentry_admin:action_type", "Addition"),

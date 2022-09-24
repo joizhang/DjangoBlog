@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Rss201rev2Feed
 
-from djangoblog.utils import CommonMarkdown
 from blog.models import Article
+from djangoblog.utils import CommonMarkdown
 
 
 class DjangoBlogFeed(Feed):

@@ -5,9 +5,8 @@ from .models import Comment
 
 
 class CommentForm(ModelForm):
-    parent_comment_id = forms.IntegerField(
-        widget=forms.HiddenInput, required=False)
+    parent_comment_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model = Comment
-        fields = ['body']
+        fields = ["body"]

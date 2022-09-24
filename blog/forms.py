@@ -14,6 +14,6 @@ class BlogSearchForm(SearchForm):
         if not self.is_valid():
             return self.no_query_found()
 
-        if self.cleaned_data['querydata']:
-            logger.info(self.cleaned_data['querydata'])
+        if self.cleaned_data["querydata"]:
+            logger.info(self.cleaned_data["querydata"])
         return datas

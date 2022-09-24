@@ -16,21 +16,15 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from django.urls import include
-from django.urls import re_path
+from django.urls import include, re_path
 from haystack.views import search_view_factory
 
 from blog.views import EsSearchView
 from djangoblog.admin_site import admin_site
 from djangoblog.elasticsearch_backend import ElasticSearchModelSearchForm
 from djangoblog.feeds import DjangoBlogFeed
-from djangoblog.sitemap import (
-    ArticleSiteMap,
-    CategorySiteMap,
-    StaticViewSitemap,
-    TagSiteMap,
-    UserSiteMap,
-)
+from djangoblog.sitemap import (ArticleSiteMap, CategorySiteMap,
+                                StaticViewSitemap, TagSiteMap, UserSiteMap)
 
 sitemaps = {
     "blog": ArticleSiteMap,

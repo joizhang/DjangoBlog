@@ -5,6 +5,5 @@ from .robot import robot
 
 app_name = "servermanager"
 urlpatterns = [
-    path(r'robot', make_view(robot)),
-
+    path(r"robot", make_view(robot)),
 ]

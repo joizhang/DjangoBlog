@@ -15,10 +15,10 @@ class OnlineMiddleware(object):
         super().__init__()
 
     def __call__(self, request):
-        ''' page render time '''
+        """page render time"""
         start_time = time.time()
         response = self.get_response(request)
-        http_user_agent = request.META.get('HTTP_USER_AGENT', '')
+        http_user_agent = request.META.get("HTTP_USER_AGENT", "")
         ip, _ = get_client_ip(request)
         user_agent = parse(http_user_agent)
         if not response.streaming:
@@ -28,14 +28,17 @@ class OnlineMiddleware(object):
                     time_taken = round((cast_time) * 1000, 2)
                     url = request.path
                     from django.utils import timezone
+
                     ElaspedTimeDocumentManager.create(
                         url=url,
                         time_taken=time_taken,
                         log_datetime=timezone.now(),
                         useragent=user_agent,
-                        ip=ip)
+                        ip=ip,
+                    )
                 response.content = response.content.replace(
-                    b'<!!LOAD_TIMES!!>', str.encode(str(cast_time)[:5]))
+                    b"<!!LOAD_TIMES!!>", str.encode(str(cast_time)[:5])
+                )
             except Exception as e:
                 logger.error("Error OnlineMiddleware: %s" % e)
 

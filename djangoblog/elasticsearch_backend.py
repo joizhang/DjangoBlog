@@ -1,6 +1,7 @@
 from django.utils.encoding import force_str
 from elasticsearch_dsl import Q
-from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query
+from haystack.backends import (BaseEngine, BaseSearchBackend, BaseSearchQuery,
+                               log_query)
 from haystack.forms import ModelSearchForm
 from haystack.models import SearchResult
 from haystack.utils import log as logging
