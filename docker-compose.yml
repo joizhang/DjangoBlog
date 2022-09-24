@@ -1,33 +1,42 @@
 version: '3'
 
 services:
+  redis:
+    restart: always
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
   db:
     image: mysql:latest
     restart: always
     command:
       - mysqld
+      - --host_cache_size=0
       - --max_connections=3000
       - --wait_timeout=600
       - --interactive_timeout=600
       - --thread_cache_size=50
-      - --default-authentication-plugin=mysql_native_password
-      - --character-set-server=utf8
-      - --collation-server=utf8_general_ci
+      - --authentication_policy=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=2
     environment:
       - MYSQL_DATABASE=djangoblog
       - MYSQL_ROOT_PASSWORD=DjAnGoBlOg!2!Q@W#E
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - ./bin/datas/mysql/:/var/lib/mysql
     depends_on:
       - redis
     container_name: db
-
   djangoblog:
     build: .
     restart: always
-    command: bash -c 'sh /code/djangoblog/bin/docker_start.sh'
+    # command: bash -c 'sh /code/djangoblog/bin/docker_start.sh'
+    command: "bash -c 'tail -f manage.py'"
     ports:
       - "8000:8000"
     volumes:
@@ -46,22 +55,16 @@ services:
     depends_on:
       - db
     container_name: djangoblog
+
   nginx:
     restart: always
     image: nginx:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
     volumes:
       - ./bin/nginx.conf:/etc/nginx/nginx.conf
       - ./collectedstatic:/code/djangoblog/collectedstatic
     links:
       - djangoblog:djangoblog
     container_name: nginx
-
-  redis:
-    restart: always
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"

@@ -8,9 +8,10 @@ class DjangoBlogTest(TestCase):
         pass
 
     def test_utils(self):
-        md5 = get_sha256('test')
+        md5 = get_sha256("test")
         self.assertIsNotNone(md5)
-        c = CommonMarkdown.get_markdown('''
+        c = CommonMarkdown.get_markdown(
+            """
         # Title1
 
         ```python
@@ -22,11 +23,9 @@ class DjangoBlogTest(TestCase):
         [ddd](http://www.baidu.com)
 
 
-        ''')
+        """
+        )
         self.assertIsNotNone(c)
-        d = {
-            'd': 'key1',
-            'd2': 'key2'
-        }
+        d = {"d": "key1", "d2": "key2"}
         data = parse_dict_to_url(d)
         self.assertIsNotNone(data)

@@ -6,10 +6,12 @@ from blog.models import Article, Category, Tag
 
 class StaticViewSitemap(Sitemap):
     priority = 0.5
-    changefreq = 'daily'
+    changefreq = "daily"
 
     def items(self):
-        return ['blog:index', ]
+        return [
+            "blog:index",
+        ]
 
     def location(self, item):
         return reverse(item)
@@ -20,7 +22,7 @@ class ArticleSiteMap(Sitemap):
     priority = "0.6"
 
     def items(self):
-        return Article.objects.filter(status='p')
+        return Article.objects.filter(status="p")
 
     def lastmod(self, obj):
         return obj.last_mod_time
