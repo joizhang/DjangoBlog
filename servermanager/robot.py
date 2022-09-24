@@ -8,7 +8,7 @@ from django.conf import settings
 from djangoblog.utils import get_sha256
 from servermanager.api.blogapi import BlogApi
 from servermanager.api.commonapi import TuLing
-from servermanager.models import commands
+from servermanager.models import Commands
 from .MemcacheStorage import MemcacheStorage
 
 robot = WeRoBot(token=os.environ.get('DJANGO_WEROBOT_TOKEN')
@@ -116,7 +116,7 @@ def echo(message, session):
 
 class CommandHandler():
     def __init__(self):
-        self.commands = commands.objects.all()
+        self.commands = Commands.objects.all()
 
     def run(self, title):
         cmd = list(

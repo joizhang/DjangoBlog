@@ -6,7 +6,7 @@ from djangoblog.utils import get_current_site
 from accounts.models import BlogUser
 from blog.models import Category, Article
 from servermanager.api.commonapi import TuLing
-from .models import commands
+from .models import Commands
 from .robot import MessageHandler, CommandHandler
 from .robot import search, category, recents
 
@@ -53,7 +53,7 @@ class ServerManagerTest(TestCase):
         rsp = recents(None, None)
         self.assertTrue(rsp != '暂时还没有文章')
 
-        cmd = commands()
+        cmd = Commands()
         cmd.title = "test"
         cmd.command = "ls"
         cmd.describe = "test"

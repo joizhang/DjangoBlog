@@ -35,8 +35,7 @@ services:
   djangoblog:
     build: .
     restart: always
-    # command: bash -c 'sh /code/djangoblog/bin/docker_start.sh'
-    command: "bash -c 'tail -f manage.py'"
+    command: "bash -c 'tail -f /code/djangoblog/logs/djangoblog.log'"
     ports:
       - "8000:8000"
     volumes:
