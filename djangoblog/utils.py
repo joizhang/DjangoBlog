@@ -11,8 +11,10 @@ from hashlib import sha256
 
 import markdown
 import requests
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.templatetags.static import static
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +52,9 @@ def cache_decorator(expiration=3 * 60):
                 else:
                     return value
             else:
-                logger.info(
-                    "cache_decorator set cache:%s key:%s" % (func.__name__, key)
-                )
+                logger.debug(
+                    'cache_decorator set cache:%s key:%s' %
+                    (func.__name__, key))
                 value = func(*args, **kwargs)
                 if value is None:
                     cache.set(key, "__default_cache_value__", expiration)
@@ -156,18 +158,19 @@ def get_blog_setting():
 
         if not BlogSettings.objects.count():
             setting = BlogSettings()
-            setting.sitename = "djangoblog"
-            setting.site_description = "基于Django的博客系统"
-            setting.site_seo_description = "基于Django的博客系统"
-            setting.site_keywords = "Django,Python"
+            setting.site_name = 'djangoblog'
+            setting.site_description = '基于Django的博客系统'
+            setting.site_seo_description = '基于Django的博客系统'
+            setting.site_keywords = 'Django,Python'
             setting.article_sub_length = 300
             setting.sidebar_article_count = 10
             setting.sidebar_comment_count = 5
             setting.show_google_adsense = False
             setting.open_site_comment = True
-            setting.analyticscode = ""
-            setting.beiancode = ""
+            setting.analytics_code = ''
+            setting.beian_code = ''
             setting.show_gongan_code = False
+            setting.comment_need_review = False
             setting.save()
         value = BlogSettings.objects.first()
         logger.info("set cache get_blog_setting")
@@ -181,34 +184,26 @@ def save_user_avatar(url):
     :param url:头像url
     :return: 本地路径
     """
-    setting = get_blog_setting()
     logger.info(url)
 
     try:
-        imgname = url.split("/")[-1]
-        if imgname:
-            path = r"{basedir}/avatar/{img}".format(
-                basedir=setting.resource_path, img=imgname
-            )
-            if os.path.exists(path):
-                os.remove(path)
+        basedir = os.path.join(settings.STATICFILES, 'avatar')
         rsp = requests.get(url, timeout=2)
         if rsp.status_code == 200:
-            basepath = r"{basedir}/avatar/".format(basedir=setting.resource_path)
-            if not os.path.exists(basepath):
-                os.makedirs(basepath)
+            if not os.path.exists(basedir):
+                os.makedirs(basedir)
 
-            imgextensions = [".jpg", ".png", "jpeg", ".gif"]
-            isimage = len([i for i in imgextensions if url.endswith(i)]) > 0
-            ext = os.path.splitext(url)[1] if isimage else ".jpg"
-            savefilename = str(uuid.uuid4().hex) + ext
-            logger.info("保存用户头像:" + basepath + savefilename)
-            with open(basepath + savefilename, "wb+") as file:
+            image_extensions = ['.jpg', '.png', 'jpeg', '.gif']
+            isimage = len([i for i in image_extensions if url.endswith(i)]) > 0
+            ext = os.path.splitext(url)[1] if isimage else '.jpg'
+            save_filename = str(uuid.uuid4().hex) + ext
+            logger.info('保存用户头像:' + basedir + save_filename)
+            with open(os.path.join(basedir, save_filename), 'wb+') as file:
                 file.write(rsp.content)
-            return "https://resource.lylinux.net/avatar/" + savefilename
+            return static('avatar/' + save_filename)
     except Exception as e:
         logger.error(e)
-        return url
+        return static('blog/img/avatar.png')
 
 
 def delete_sidebar_cache():
@@ -225,3 +220,11 @@ def delete_view_cache(prefix, keys):
 
     key = make_template_fragment_key(prefix, keys)
     cache.delete(key)
+
+
+def get_resource_url():
+    if settings.STATIC_URL:
+        return settings.STATIC_URL
+    else:
+        site = get_current_site()
+        return 'http://' + site.domain + '/static/'

@@ -19,16 +19,15 @@ enable_commentstatus.short_description = "启用评论"
 class CommentAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_display = (
-        "id",
-        "body",
-        "link_to_userinfo",
-        "link_to_article",
-        "is_enable",
-        "created_time",
-    )
-    list_display_links = ("id", "body")
-    list_filter = ("author", "article", "is_enable")
-    exclude = ("created_time", "last_mod_time")
+        'id',
+        'body',
+        'link_to_userinfo',
+        'link_to_article',
+        'is_enable',
+        'created_time')
+    list_display_links = ('id', 'body', 'is_enable')
+    list_filter = ('is_enable', 'author', 'article',)
+    exclude = ('created_time', 'last_mod_time')
     actions = [disable_commentstatus, enable_commentstatus]
 
     def link_to_userinfo(self, obj):

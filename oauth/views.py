@@ -1,4 +1,3 @@
-import datetime
 import logging
 # Create your views here.
 from urllib.parse import urlparse
@@ -10,6 +9,7 @@ from django.db import transaction
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import FormView
 
 from djangoblog.blog_signals import oauth_user_login_signal
@@ -69,17 +69,13 @@ def authorize(request):
         return HttpResponseRedirect(manager.get_authorization_url(nexturl))
     user = manager.get_oauth_userinfo()
     if user:
-        if not user.nikename or not user.nikename.strip():
-            import datetime
-
-            user.nikename = "djangoblog" + datetime.datetime.now().strftime(
-                "%y%m%d%I%M%S"
-            )
+        if not user.nickname or not user.nickname.strip():
+            user.nickname = "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
         try:
             temp = OAuthUser.objects.get(type=type, openid=user.openid)
             temp.picture = user.picture
-            temp.matedata = user.matedata
-            temp.nikename = user.nikename
+            temp.metadata = user.metadata
+            temp.nickname = user.nickname
             user = temp
         except ObjectDoesNotExist:
             pass
@@ -98,15 +94,12 @@ def authorize(request):
                     author = result[0]
                     if result[1]:
                         try:
-                            get_user_model().objects.get(username=user.nikename)
+                            get_user_model().objects.get(username=user.nickname)
                         except ObjectDoesNotExist:
-                            author.username = user.nikename
+                            author.username = user.nickname
                         else:
-                            author.username = (
-                                "djangoblog"
-                                + datetime.datetime.now().strftime("%y%m%d%I%M%S")
-                            )
-                        author.source = "authorize"
+                            author.username = "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
+                        author.source = 'authorize'
                         author.save()
 
                 user.author = author
@@ -140,12 +133,9 @@ def emailconfirm(request, id, sign):
             result = get_user_model().objects.get_or_create(email=oauthuser.email)
             author = result[0]
             if result[1]:
-                author.source = "emailconfirm"
-                author.username = (
-                    oauthuser.nikename.strip()
-                    if oauthuser.nikename.strip()
-                    else "djangoblog" + datetime.datetime.now().strftime("%y%m%d%I%M%S")
-                )
+                author.source = 'emailconfirm'
+                author.username = oauthuser.nickname.strip() if oauthuser.nickname.strip(
+                ) else "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
                 author.save()
         oauthuser.author = author
         oauthuser.save()

@@ -9,6 +9,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import OwnTrackLog
@@ -42,10 +43,12 @@ def manage_owntrack_log(request):
 @login_required
 def show_maps(request):
     if request.user.is_superuser:
-        defaultdate = str(datetime.datetime.now().date())
-        date = request.GET.get("date", defaultdate)
-        context = {"date": date}
-        return render(request, "owntracks/show_maps.html", context)
+        defaultdate = str(timezone.now().date())
+        date = request.GET.get('date', defaultdate)
+        context = {
+            'date': date
+        }
+        return render(request, 'owntracks/show_maps.html', context)
     else:
         from django.http import HttpResponseForbidden
 
@@ -74,7 +77,8 @@ def convert_to_amap(locations):
         query = {"key": key, "locations": datas, "coordsys": "gps"}
         rsp = requests.get(url=api, params=query)
         result = json.loads(rsp.text)
-        convert_result.append(result["locations"])
+        if "locations" in result:
+            convert_result.append(result['locations'])
         item = list(itertools.islice(it, 30))
 
     return ";".join(convert_result)

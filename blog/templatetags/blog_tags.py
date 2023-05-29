@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import stringfilter
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -89,7 +90,7 @@ def load_breadcrumb(article):
 
     blogsetting = get_blog_setting()
     site = get_current_site().domain
-    names.append((blogsetting.sitename, "/"))
+    names.append((blogsetting.site_name, '/'))
     names = names[::-1]
 
     return {"names": names, "title": article.title, "count": len(names) + 1}
@@ -283,9 +284,7 @@ def gravatar_url(email, size=40):
                 return o[0].picture
         email = email.encode("utf-8")
 
-        default = "https://resource.lylinux.net/image/2017/03/26/120117.jpg".encode(
-            "utf-8"
-        )
+        default = static('blog/img/avatar.png')
 
         url = "https://www.gravatar.com/avatar/%s?%s" % (
             hashlib.md5(email.lower()).hexdigest(),

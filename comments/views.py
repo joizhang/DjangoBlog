@@ -1,6 +1,7 @@
 # Create your views here.
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
@@ -20,15 +21,14 @@ class CommentPostView(FormView):
         return super(CommentPostView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        article_id = self.kwargs["article_id"]
-
-        article = Article.objects.get(pk=article_id)
+        article_id = self.kwargs['article_id']
+        article = get_object_or_404(Article, pk=article_id)
         url = article.get_absolute_url()
         return HttpResponseRedirect(url + "#comments")
 
     def form_invalid(self, form):
-        article_id = self.kwargs["article_id"]
-        article = Article.objects.get(pk=article_id)
+        article_id = self.kwargs['article_id']
+        article = get_object_or_404(Article, pk=article_id)
 
         return self.render_to_response({"form": form, "article": article})
 
@@ -36,14 +36,17 @@ class CommentPostView(FormView):
         """提交的数据验证合法后的逻辑"""
         user = self.request.user
 
-        article_id = self.kwargs["article_id"]
-        article = Article.objects.get(pk=article_id)
+        article_id = self.kwargs['article_id']
+        article = get_object_or_404(Article, pk=article_id)
 
         if article.comment_status == "c" or article.status == "c":
             raise ValidationError("该文章评论已关闭.")
         comment = form.save(False)
         comment.article = article
-
+        from djangoblog.utils import get_blog_setting
+        settings = get_blog_setting()
+        if not settings.comment_need_review:
+            comment.is_enable = True
         comment.author = user
 
         if form.cleaned_data["parent_comment_id"]:

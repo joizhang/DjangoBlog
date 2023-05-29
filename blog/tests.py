@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.core.paginator import Paginator
+from django.templatetags.static import static
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +14,7 @@ from blog.forms import BlogSearchForm
 from blog.models import Article, Category, Links, SideBar, Tag
 from blog.templatetags.blog_tags import load_articletags, load_pagination_info
 from djangoblog.utils import get_current_site, get_sha256
+from oauth.models import OAuthUser, OAuthConfig
 
 # Create your tests here.
 
@@ -141,8 +143,9 @@ class ArticleTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.client.get("/admin/blog/article/1/delete/")
-        self.client.get("/admin/servermanager/emailsendlog/")
-        self.client.get("admin/admin/logentry/")
+        self.client.get('/admin/servermanager/emailsendlog/')
+        self.client.get('/admin/admin/logentry/')
+        self.client.get('/admin/admin/logentry/1/change/')
 
     def __check_pagination__(self, p, type, value):
         s = load_pagination_info(p.page(1), type, value)
@@ -187,6 +190,41 @@ class ArticleTest(TestCase):
         self.assertEqual(rsp.status_code, 404)
 
     def test_commands(self):
+        user = BlogUser.objects.get_or_create(
+            email="liangliangyy@gmail.com",
+            username="liangliangyy")[0]
+        user.set_password("liangliangyy")
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+
+        c = OAuthConfig()
+        c.type = 'qq'
+        c.appkey = 'appkey'
+        c.appsecret = 'appsecret'
+        c.save()
+
+        u = OAuthUser()
+        u.type = 'qq'
+        u.openid = 'openid'
+        u.user = user
+        u.picture = static("/blog/img/avatar.png")
+        u.metadata = '''
+{
+"figureurl": "https://qzapp.qlogo.cn/qzapp/101513904/C740E30B4113EAA80E0D9918ABC78E82/30"
+}'''
+        u.save()
+
+        u = OAuthUser()
+        u.type = 'qq'
+        u.openid = 'openid1'
+        u.picture = 'https://qzapp.qlogo.cn/qzapp/101513904/C740E30B4113EAA80E0D9918ABC78E82/30'
+        u.metadata = '''
+        {
+       "figureurl": "https://qzapp.qlogo.cn/qzapp/101513904/C740E30B4113EAA80E0D9918ABC78E82/30"
+        }'''
+        u.save()
+
         from blog.documents import ELASTICSEARCH_ENABLED
 
         if ELASTICSEARCH_ENABLED:

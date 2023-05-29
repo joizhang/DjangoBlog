@@ -6,7 +6,8 @@ from accounts.models import BlogUser
 from blog.models import Article, Category
 from comments.models import Comment
 from comments.templatetags.comments_tags import *
-from djangoblog.utils import get_current_site, get_max_articleid_commentid
+from djangoblog.utils import get_max_articleid_commentid
+
 
 # Create your tests here.
 
@@ -15,9 +16,18 @@ class CommentsTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
+        from blog.models import BlogSettings
+        value = BlogSettings()
+        value.comment_need_review = True
+        value.save()
+
+    def update_article_comment_status(self, article):
+        comments = article.comment_set.all()
+        for comment in comments:
+            comment.is_enable = True
+            comment.save()
 
     def test_validate_comment(self):
-        site = get_current_site().domain
         user = BlogUser.objects.create_superuser(
             email="liangliangyy1@gmail.com",
             username="liangliangyy1",
@@ -48,6 +58,9 @@ class CommentsTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
         article = Article.objects.get(pk=article.pk)
+        self.assertEqual(len(article.comment_list()), 0)
+        self.update_article_comment_status(article)
+
         self.assertEqual(len(article.comment_list()), 1)
 
         response = self.client.post(
@@ -60,6 +73,7 @@ class CommentsTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
         article = Article.objects.get(pk=article.pk)
+        self.update_article_comment_status(article)
         self.assertEqual(len(article.comment_list()), 2)
         parent_comment_id = article.comment_list()[0].id
 
@@ -84,7 +98,7 @@ class CommentsTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-
+        self.update_article_comment_status(article)
         article = Article.objects.get(pk=article.pk)
         self.assertEqual(len(article.comment_list()), 3)
         comment = Comment.objects.get(id=parent_comment_id)
