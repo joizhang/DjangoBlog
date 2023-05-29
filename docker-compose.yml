@@ -32,6 +32,7 @@ services:
     depends_on:
       - redis
     container_name: db
+
   djangoblog:
     build: .
     restart: always
